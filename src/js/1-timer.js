@@ -13,9 +13,6 @@ const refs = {
   btnStart: document.querySelector('.btn-start'),
   inputTime: document.querySelector('#datetime-picker'),
   sectionTime: document.querySelector('.field'),
-};
-
-const timeBlock = {
   dayBlock: document.querySelector('[data-days]'),
   hoursBlock: document.querySelector('[data-hours]'),
   minutesBlock: document.querySelector('[data-minutes]'),
@@ -72,14 +69,12 @@ function convertMs(ms) {
   const minutes = Math.floor(((ms % day) % hour) / minute);
   // Remaining seconds
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-  return { days, hours, minutes, seconds };
+  return [days, hours, minutes, seconds];
 }
-function addLeadingZero({ days, hours, minutes, seconds }) {
-  days = days.toString().padStart(2, '0');
-  hours = hours.toString().padStart(2, '0');
-  minutes = minutes.toString().padStart(2, '0');
-  seconds = seconds.toString().padStart(2, '0');
-  return `${days}:${hours}:${minutes}:${seconds}`;
+
+function addLeadingZero(value) {
+  value = value.toString().padStart(2, '0');
+  return `${value}`;
 }
 
 flatpickr('#datetime-picker', options);
@@ -88,9 +83,14 @@ refs.btnStart.addEventListener('click', () => {
   timeInterval = setInterval(() => {
     const currentTime = Date.now();
     const diff = userSelectedDate - currentTime;
-    const time = convertMs(diff);
-    const str = addLeadingZero(time);
-    timeBlock.dayBlock.textContent = str; //???
+    const timeDay = convertMs(diff)[0];
+    refs.dayBlock.textContent = addLeadingZero(timeDay);
+    const timeHours = convertMs(diff)[1];
+    refs.hoursBlock.textContent = addLeadingZero(timeHours);
+    const timeMinutes = convertMs(diff)[2];
+    refs.hoursBlock.textContent = addLeadingZero(timeMinutes);
+    const timeSeconds = convertMs(diff)[3];
+    refs.secondsBlock.textContent = addLeadingZero(timeSeconds);
     refs.btnStart.disabled = true;
   }, 1000);
   setTimeout(() => {
